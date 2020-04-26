@@ -1,12 +1,13 @@
-package db
+package ru.ovm.abin.db
 
-import Utils
-import db.pojo.Category
-import db.utils.DatabaseFactory
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.and
+import ru.ovm.abin.Utils
+import ru.ovm.abin.db.pojo.Category
+import ru.ovm.abin.db.utils.DatabaseFactory
 
 data class Item(
     val id: Int,
@@ -64,6 +65,7 @@ internal class ItemDao(id: EntityID<Int>) : IntEntity(id) {
     val duplicates by ItemDao optionalReferrersOn ItemTable.firstInstance
     val firstInstance by ItemDao optionalReferencedOn ItemTable.firstInstance
     val deleted by ItemTable.deleted
+    val sellerId by ItemTable.seller
 
     fun toModel(): Item {
         return Item(
@@ -72,6 +74,17 @@ internal class ItemDao(id: EntityID<Int>) : IntEntity(id) {
             firstInstance?.toModel(), deleted
         )
     }
+}
+
+suspend fun findItemsBySellerAndDeletedIsOrderByTimestampAsc(seller: Seller, deleted: Boolean): List<Item> = DatabaseFactory.dbQuery {
+    ItemDao.find { (ItemTable.seller eq seller.vkId) and (ItemTable.deleted eq deleted) }
+        .sortedBy { it.timestamp }
+        .toList()
+        .map { it.toModel() }
+}
+
+suspend fun getActiveItemsCount(): Long = DatabaseFactory.dbQuery {
+    ItemDao.find { ItemTable.deleted eq false }.count()
 }
 
 suspend fun getAllItems(): List<Item> = DatabaseFactory.dbQuery { ItemDao.all().toList().map { it.toModel() } }

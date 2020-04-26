@@ -1,4 +1,4 @@
-package db.pojo
+package ru.ovm.abin.db.pojo
 
 /**
  * Created by vladislav

@@ -184,10 +184,10 @@ local.properties
 
 ### Windows template
 # Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
+Thumbs.ru.ovm.abin.db
+Thumbs.ru.ovm.abin.db:encryptable
+ehthumbs.ru.ovm.abin.db
+ehthumbs_vista.ru.ovm.abin.db
 
 # Dump file
 *.stackdump
@@ -236,4 +236,4 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
-*.db
+*.ru.ovm.abin.db

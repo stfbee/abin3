@@ -1,12 +1,12 @@
-package db
+package ru.ovm.abin.db
 
-import db.pojo.Category
-import db.pojo.Status
-import db.utils.DatabaseFactory
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import ru.ovm.abin.db.pojo.Category
+import ru.ovm.abin.db.pojo.Status
+import ru.ovm.abin.db.utils.DatabaseFactory
 
 data class VkAlbum(
     val vkId: Int,
@@ -14,7 +14,7 @@ data class VkAlbum(
     val name: String,
     val deleted: Boolean,
     val status: Status,
-    val groupId:Int
+    val groupId: Int
 )
 
 data class VkAlbumWithGroup(
@@ -52,7 +52,21 @@ internal class VkAlbumDao(val vkId: EntityID<Int>) : IntEntity(vkId) {
     }
 }
 
-suspend fun get5Albums(): List<VkAlbum> = DatabaseFactory.dbQuery { VkAlbumDao.all().limit(5).toList().map { it.toModel() } }
-suspend fun get5AlbumsWithGroups(): List<VkAlbumWithGroup> = DatabaseFactory.dbQuery { VkAlbumDao.all().limit(5).toList().map { it.toModelWithGroup() } }
+suspend fun get5Albums(): List<VkAlbum> = DatabaseFactory.dbQuery {
+    VkAlbumDao.all()
+        .limit(5)
+        .toList()
+        .map { it.toModel() }
+}
 
+suspend fun get5AlbumsWithGroups(): List<VkAlbumWithGroup> = DatabaseFactory.dbQuery {
+    VkAlbumDao.all()
+        .limit(5)
+        .toList()
+        .map { it.toModelWithGroup() }
+}
+
+suspend fun getActiveAlbumsCount(): Long = DatabaseFactory.dbQuery {
+    VkAlbumDao.find { VkAlbumTable.deleted eq false }.count()
+}
 

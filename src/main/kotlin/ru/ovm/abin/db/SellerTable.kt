@@ -1,6 +1,6 @@
-package db
+package ru.ovm.abin.db
 
-import db.utils.DatabaseFactory
+import ru.ovm.abin.db.utils.DatabaseFactory
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -1,11 +1,11 @@
-package db
+package ru.ovm.abin.db
 
-import db.pojo.Status
-import db.utils.DatabaseFactory
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import ru.ovm.abin.db.pojo.Status
+import ru.ovm.abin.db.utils.DatabaseFactory
 
 data class VkGroup(
     val vkId: Int,
@@ -45,7 +45,20 @@ internal class VkGroupDao(val vkId: EntityID<Int>) : IntEntity(vkId) {
     }
 }
 
-suspend fun get5Groups(): List<VkGroup> = DatabaseFactory.dbQuery { VkGroupDao.all().limit(5).toList().map { it.toModel() } }
-suspend fun get5GroupsWithAlbums(): List<VkGroupWithAlbums> = DatabaseFactory.dbQuery { VkGroupDao.all().limit(5).toList().map { it.toModelWithAlbums() } }
+suspend fun get5Groups(): List<VkGroup> = DatabaseFactory.dbQuery {
+    VkGroupDao.all()
+        .limit(5)
+        .toList()
+        .map { it.toModel() }
+}
 
+suspend fun get5GroupsWithAlbums(): List<VkGroupWithAlbums> = DatabaseFactory.dbQuery {
+    VkGroupDao.all()
+        .limit(5)
+        .toList()
+        .map { it.toModelWithAlbums() }
+}
 
+suspend fun getActiveGroupsCount(): Long = DatabaseFactory.dbQuery {
+    VkGroupDao.find { VkGroupTable.deleted eq false }.count()
+}

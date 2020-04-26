@@ -1,4 +1,8 @@
-import db.VkAlbum
+package ru.ovm.abin
+
+import ru.ovm.abin.db.Item
+import ru.ovm.abin.db.VkAlbum
+import ru.ovm.abin.db.findItemsBySellerAndDeletedIsOrderByTimestampAsc
 
 /**
  * Created with love
@@ -10,26 +14,25 @@ object Utils {
         return "photo-" + vkAlbum.groupId + '_'.toString() + photo_id
     }
 
-    /* */
     /**
      * Метод возвращает, если имеется, лот с таким же описанием (или первым комментом, если описание пустое) от того же продавца
      *
      * @param current_item текущий добавляемый лот
      * @return самый старый лот от того же продавца с таким же описанием
-     *//*
-    fun findDuplicate(itemRepository: ItemRepository, current_item: Item): Item? {
-        val items = itemRepository.findBySellerAndDeletedIsOrderByTimestampAsc(current_item.seller, false)
+     */
+    suspend fun findDuplicate(current_item: Item): Item? {
+        val items = findItemsBySellerAndDeletedIsOrderByTimestampAsc(current_item.seller, false)
 
         for (item in items) {
             if (item.url != current_item.url) {
                 val description = item.description
-                if (!description.isEmpty() && description.length >= App.min_desc_size) {
+                if (description.isNotEmpty() && description.length >= App.min_desc_size) {
                     if (description.equals(current_item.description, ignoreCase = true)) {
                         return item
                     }
                 } else {
                     val firstComment = item.comments
-                    if (!firstComment.isEmpty() && firstComment.length >= App.min_desc_size) {
+                    if (firstComment.isNotEmpty() && firstComment.length >= App.min_desc_size) {
                         if (firstComment.equals(current_item.comments, ignoreCase = true)) {
                             return item
                         }
@@ -39,5 +42,5 @@ object Utils {
         }
 
         return null
-    }*/
+    }
 }
