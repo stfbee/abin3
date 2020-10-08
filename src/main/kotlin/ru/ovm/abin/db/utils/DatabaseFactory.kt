@@ -3,11 +3,23 @@ package ru.ovm.abin.db.utils
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.transaction
+import ru.ovm.abin.db.*
 
 object DatabaseFactory {
     fun init() {
         Database.connect(hikari())
+//        transaction {
+//            ItemTable.innerJoin(SellerTable).innerJoin(VkGroupTable).innerJoin(VkAlbumTable).selectAll().toList().map {
+//                VkAlbumDao.wrapRow(it)
+//                VkGroupDao.wrapRow(it)
+//                SellerDao.wrapRow(it)
+//                ItemDao.wrapRow(it)
+//            }
+//                .forEach { println(it) }
+//        }
     }
 
     private fun hikari(): HikariDataSource {
