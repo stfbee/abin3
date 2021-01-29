@@ -50,9 +50,11 @@ fun Application.module() {
     DatabaseFactory.init()
 
     routing {
-        get("/api/sellers/") { call.respond(get5Sllers()) }
-        get("/api/groups/") { call.respond(get5GroupsWithAlbums()) }
-        get("/api/albums/") { call.respond(get5Albums()) }
+        get("/api/sellers/") { call.respond(getAllSellers()) }
+        get("/api/groups/") { call.respond(getAllGroupsWithAlbums()) }
+        get("/api/albums/") { call.respond(getAllAlbums()) }
+
+
         get("/api/items/") {
             val parameters = call.parameters
             val query = parameters["query"] ?: ""
@@ -76,16 +78,28 @@ fun Application.module() {
             call.respond(getPageOfItems2(query, category, seller, page, count, start_time, deleted))
         }
 
-        get("/api/items51/") { call.respond(get5ItemsAll()) }
-        get("/api/items52/") { call.respond(get5Items()) }
+        get("/api/items52/") { call.respond(get5Items()) } // быстрее
+
         get("/api/draw/") {
             val pathname = "image.png"
-            VkHeaderGenerator().drawText(getActiveGroupsCount().toString(), getActiveAlbumsCount().toString(), getActiveItemsCount().toString(), pathname)
+            VkHeaderGenerator().drawText(
+                groups_count = getActiveGroupsCount().toString(),
+                albums_count = getActiveAlbumsCount().toString(),
+                items_count = getActiveItemsCount().toString(),
+                result_path = pathname
+            )
             call.respondFile(File(pathname))
         }
 
         get("/api/info") {
-            call.respond(Info(getActiveItemsCount(), getActiveGroupsCount(), getActiveAlbumsCount(), App.version))
+            call.respond(
+                Info(
+                    items = getActiveItemsCount(),
+                    groups = getActiveGroupsCount(),
+                    albums = getActiveAlbumsCount(),
+                    version = App.version
+                )
+            )
         }
     }
 }

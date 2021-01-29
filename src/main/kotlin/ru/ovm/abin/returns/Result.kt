@@ -1,4 +1,4 @@
-package ru.ovm.aib.db.returns
+package ru.ovm.abin.returns
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 

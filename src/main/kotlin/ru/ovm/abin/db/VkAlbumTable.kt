@@ -59,9 +59,21 @@ suspend fun get5Albums(): List<VkAlbum> = DatabaseFactory.dbQuery {
         .map { it.toModel() }
 }
 
+suspend fun getAllAlbums(): List<VkAlbum> = DatabaseFactory.dbQuery {
+    VkAlbumDao.all()
+        .toList()
+        .map { it.toModel() }
+}
+
 suspend fun get5AlbumsWithGroups(): List<VkAlbumWithGroup> = DatabaseFactory.dbQuery {
     VkAlbumDao.all()
         .limit(5)
+        .toList()
+        .map { it.toModelWithGroup() }
+}
+
+suspend fun getALlAlbumsWithGroups(): List<VkAlbumWithGroup> = DatabaseFactory.dbQuery {
+    VkAlbumDao.all()
         .toList()
         .map { it.toModelWithGroup() }
 }

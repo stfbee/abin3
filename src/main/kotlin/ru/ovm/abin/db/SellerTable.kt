@@ -33,7 +33,7 @@ internal class SellerDao(val vkId: EntityID<Int>) : IntEntity(vkId) {
 
 suspend fun getAllSellers(): List<Seller> = DatabaseFactory.dbQuery { SellerDao.all().toList().map { it.toModel() } }
 
-suspend fun get5Sllers(): List<Seller> = DatabaseFactory.dbQuery { SellerDao.all().limit(5, 0).toList().map { it.toModel() } }
+suspend fun get5Sellers(): List<Seller> = DatabaseFactory.dbQuery { SellerDao.all().limit(5, 0).toList().map { it.toModel() } }
 
 suspend fun getSeller(id: Int): Seller? = DatabaseFactory.dbQuery { SellerDao.findById(id)?.toModel() }
 

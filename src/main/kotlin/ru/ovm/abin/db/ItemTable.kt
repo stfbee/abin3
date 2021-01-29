@@ -89,38 +89,63 @@ internal class ItemDao(id: EntityID<Int>) : IntEntity(id) {
 
     fun toModel(): Item {
         return Item(
-            id.value, seller.toModel(), vkAlbum.toModel(), category, photo_id, url, photo_src,
-            description, comments, info, timestamp, vkGroup.toModel(), duplicates.map { it.toModelAsDuplicate() },
-            firstInstance?.toModel(), deleted
+            id = id.value,
+            seller = seller.toModel(),
+            vkAlbum = vkAlbum.toModel(),
+            category = category,
+            photo_id = photo_id,
+            url = url,
+            photo_src = photo_src,
+            description = description,
+            comments = comments,
+            info = info,
+            timestamp = timestamp,
+            vkGroup = vkGroup.toModel(),
+            duplicates = duplicates.map { it.toModelAsDuplicate() },
+            firstInstance = firstInstance?.toModel(),
+            deleted = deleted
         )
     }
 
     fun toModel2(): FrontItem {
         return FrontItem(
-            id.value, seller.toModel(), vkAlbum.toModel(), category, photo_id, url, photo_src,
-            description, comments, info, timestamp, vkGroup.toModel(), duplicates.map { it.toModelAsDuplicate() }
+            id = id.value,
+            seller = seller.toModel(),
+            vkAlbum = vkAlbum.toModel(),
+            category = category,
+            photo_id = photo_id,
+            url = url,
+            photo_src = photo_src,
+            description = description,
+            comments = comments,
+            info = info,
+            timestamp = timestamp,
+            vkGroup = vkGroup.toModel(),
+            duplicates = duplicates.map { it.toModelAsDuplicate() }
         )
     }
 
     fun toModelAsDuplicate(): Duplicate {
-        return Duplicate(vkGroup.vkId.value, url)
+        return Duplicate(
+            vkGroupId = vkGroup.vkId.value,
+            link = url
+        )
     }
 }
 
-suspend fun findItemsBySellerAndDeletedIsOrderByTimestampAsc(seller: Seller, deleted: Boolean): List<Item> = DatabaseFactory.dbQuery {
-    ItemDao.find { (ItemTable.seller eq seller.vkId) and (ItemTable.deleted eq deleted) }
-        .sortedBy { it.timestamp }
-        .toList()
-        .map { it.toModel() }
-}
+suspend fun findItemsBySellerAndDeletedIsOrderByTimestampAsc(seller: Seller, deleted: Boolean): List<Item> =
+    DatabaseFactory.dbQuery {
+        ItemDao.find { (ItemTable.seller eq seller.vkId) and (ItemTable.deleted eq deleted) }
+            .sortedBy { it.timestamp }
+            .toList()
+            .map { it.toModel() }
+    }
 
 suspend fun getActiveItemsCount(): Long = DatabaseFactory.dbQuery {
     ItemDao.find { ItemTable.deleted eq false }.count()
 }
 
 suspend fun getAllItems(): List<Item> = DatabaseFactory.dbQuery { ItemDao.all().toList().map { it.toModel() } }
-
-suspend fun get5ItemsAll(): List<Item> = DatabaseFactory.dbQuery { ItemDao.all().limit(5, 0).toList().map { it.toModel() } }
 
 suspend fun get5Items(): List<Item> = DatabaseFactory.dbQuery {
     ItemDao.find { ItemTable.deleted eq false }
@@ -132,7 +157,6 @@ suspend fun get5Items(): List<Item> = DatabaseFactory.dbQuery {
 suspend fun getItem(id: Int): Item? = DatabaseFactory.dbQuery { ItemDao.findById(id)?.toModel() }
 
 suspend fun deleteItem(id: Int) = DatabaseFactory.dbQuery { ItemDao.findById(id)?.delete() }
-
 
 suspend fun getPageOfItems(
     query: String = "",
@@ -159,6 +183,7 @@ suspend fun getPageOfItems(
         .toList()
         .map { it.toModel2() }
 }
+
 suspend fun getPageOfItems2(
     query: String = "",
     category: Category = Category.ALL,
@@ -169,21 +194,21 @@ suspend fun getPageOfItems2(
     deleted: Boolean = false
 ): List<FrontItem> = DatabaseFactory.dbQuery {
 
-    ItemTable.select { var op = (ItemTable.deleted eq deleted) and
-            (ItemTable.timestamp greaterEq start_time) and
-            (ItemTable.firstInstance.isNull())
+    ItemTable.select {
+        var op = (ItemTable.deleted eq deleted) and
+                (ItemTable.timestamp greaterEq start_time) and
+                (ItemTable.firstInstance.isNull())
 
         if (category != Category.ALL) op = op and (ItemTable.category eq category)
         if (seller != null) op = op and (ItemTable.seller eq seller)
         if (!query.isBlank()) op = op and (ItemTable.info like "%${query.trim { it <= ' ' }}%")
 
-        op }
+        op
+    }
         .orderBy(ItemTable.timestamp to SortOrder.DESC)
         .limit(count, ((page - 1) * count).toLong())
         .toList()
         .map { ItemDao.wrapRow(it) }
         .map { it.toModel2() }
-
-
 }
 

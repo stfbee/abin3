@@ -45,16 +45,14 @@ internal class VkGroupDao(val vkId: EntityID<Int>) : IntEntity(vkId) {
     }
 }
 
-suspend fun get5Groups(): List<VkGroup> = DatabaseFactory.dbQuery {
+suspend fun getAllGroups(): List<VkGroup> = DatabaseFactory.dbQuery {
     VkGroupDao.all()
-        .limit(5)
         .toList()
         .map { it.toModel() }
 }
 
-suspend fun get5GroupsWithAlbums(): List<VkGroupWithAlbums> = DatabaseFactory.dbQuery {
+suspend fun getAllGroupsWithAlbums(): List<VkGroupWithAlbums> = DatabaseFactory.dbQuery {
     VkGroupDao.all()
-        .limit(5)
         .toList()
         .map { it.toModelWithAlbums() }
 }
